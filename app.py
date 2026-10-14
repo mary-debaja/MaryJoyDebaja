@@ -30,6 +30,7 @@ def hobby():
         "student": "Mary Joy Debaja",
         "hobby": "Photography",
         "description": "I love capturing nature and candid moments."
+        "Category": "indoor"
     })
 
 # 🔹 New Endpoint 2: Age Calculator (accepts input from URL)
