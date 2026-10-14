@@ -29,7 +29,7 @@ def hobby():
     return jsonify({
         "student": "Mary Joy Debaja",
         "hobby": "Photography",
-        "description": "I love capturing nature and candid moments."
+        "description": "I love capturing nature and candid moments.",
         "Category": "indoor"
     })
 
