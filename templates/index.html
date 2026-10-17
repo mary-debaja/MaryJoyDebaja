@@ -40,7 +40,7 @@
             border-radius: 5px;
         }
 
-        #result {
+        #result, #studentList {
             margin-top: 20px;
             padding: 10px;
             border: 1px solid #cccccc;
@@ -94,7 +94,18 @@
 
     <div id="ageResult"></div>
 
+    <hr>
+
+    <h2>Students from Database</h2>
+
+    <button onclick="loadStudents()">
+        Load Students
+    </button>
+
+    <div id="studentList"></div>
+
     <script>
+        // Student Information
         function loadStudent() {
             fetch('/student')
                 .then(response => response.json())
@@ -112,6 +123,7 @@
                 });
         }
 
+        // Greeting API
         function sayHello() {
             const name = document.getElementById('nameInput').value;
 
@@ -127,6 +139,7 @@
                 });
         }
 
+        // Age Calculator API
         function calculateAge() {
             const year = document.getElementById('birthYear').value;
 
@@ -151,6 +164,38 @@
                 .catch(error => {
                     document.getElementById('ageResult').innerText =
                         'Unable to calculate age.';
+                });
+        }
+
+        // Step 8: Load Students from Database
+        function loadStudents() {
+            fetch('/students')
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Request failed');
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    let output = '';
+
+                    data.forEach(student => {
+                        output +=
+                            '<p>' +
+                            '<b>' + student.student_id + '</b> - ' +
+                            student.name + ' | ' +
+                            student.program + ' | Year ' +
+                            student.year + ' | Section ' +
+                            student.section +
+                            '</p>';
+                    });
+
+                    document.getElementById('studentList').innerHTML =
+                        output || '<p>No student records found.</p>';
+                })
+                .catch(error => {
+                    document.getElementById('studentList').innerHTML =
+                        '<p>Unable to retrieve student records.</p>';
                 });
         }
     </script>
