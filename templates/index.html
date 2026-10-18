@@ -20,29 +20,29 @@
         }
 
         .container {
-            max-width: 1000px;
+            max-width: 1050px;
             margin: auto;
             padding: 40px 20px;
         }
 
         .header {
-            margin-bottom: 35px;
+            margin-bottom: 30px;
         }
 
         .header h1 {
             font-size: 30px;
-            margin: 0 0 8px;
+            margin: 0;
             color: #0f172a;
         }
 
         .header p {
-            margin: 0;
             color: #64748b;
             font-size: 14px;
+            margin-top: 8px;
         }
 
         .card {
-            background: #ffffff;
+            background: white;
             border: 1px solid #e2e8f0;
             border-radius: 12px;
             padding: 25px;
@@ -56,26 +56,44 @@
         }
 
         .description {
-            font-size: 14px;
             color: #64748b;
+            font-size: 14px;
             margin: 0 0 20px;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            margin-bottom: 20px;
         }
 
         .form-group {
             display: flex;
-            align-items: center;
-            gap: 10px;
-            flex-wrap: wrap;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        label {
+            font-size: 13px;
+            font-weight: bold;
+            color: #475569;
         }
 
         input, select {
+            width: 100%;
             padding: 11px 13px;
             border: 1px solid #cbd5e1;
             border-radius: 7px;
             font-size: 14px;
             background: white;
             color: #334155;
-            min-width: 200px;
             outline: none;
         }
 
@@ -98,9 +116,25 @@
             background: #1d4ed8;
         }
 
+        button:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        .inline-form {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .inline-form input,
+        .inline-form select {
+            flex: 1;
+        }
+
         .result {
-            margin-top: 20px;
-            padding: 16px;
+            margin-top: 18px;
+            padding: 15px;
             background: #f8fafc;
             border: 1px solid #e2e8f0;
             border-radius: 8px;
@@ -112,17 +146,19 @@
         }
 
         .result p {
-            margin: 7px 0;
+            margin: 6px 0;
         }
 
-        .info-grid {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 20px;
+        .success {
+            background: #f0fdf4;
+            color: #166534;
+            border-color: #bbf7d0;
         }
 
-        .info-grid .card {
-            margin-bottom: 20px;
+        .error {
+            background: #fef2f2;
+            color: #b91c1c;
+            border-color: #fecaca;
         }
 
         .table-container {
@@ -140,20 +176,14 @@
             background: #f8fafc;
             color: #64748b;
             text-align: left;
+            padding: 13px;
             font-size: 12px;
             text-transform: uppercase;
-            letter-spacing: 0.5px;
-            padding: 13px;
-            border-bottom: 1px solid #e2e8f0;
         }
 
         td {
-            padding: 14px 13px;
+            padding: 13px;
             border-bottom: 1px solid #e2e8f0;
-        }
-
-        tr:last-child td {
-            border-bottom: none;
         }
 
         tbody tr:hover {
@@ -162,10 +192,10 @@
 
         .badge {
             display: inline-block;
-            background: #eff6ff;
-            color: #2563eb;
             padding: 4px 10px;
             border-radius: 20px;
+            background: #eff6ff;
+            color: #2563eb;
             font-size: 12px;
             font-weight: bold;
         }
@@ -174,15 +204,14 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            flex-wrap: wrap;
-            gap: 10px;
+            gap: 15px;
         }
 
         .footer {
             text-align: center;
-            margin-top: 30px;
             color: #94a3b8;
             font-size: 13px;
+            margin-top: 30px;
         }
 
         @media (max-width: 650px) {
@@ -190,30 +219,31 @@
                 padding: 25px 15px;
             }
 
-            .header h1 {
-                font-size: 25px;
-            }
-
-            .info-grid {
+            .grid, .form-grid {
                 grid-template-columns: 1fr;
                 gap: 0;
             }
 
-            .card {
-                padding: 20px;
+            .form-grid {
+                gap: 15px;
             }
 
-            input, select {
-                width: 100%;
+            .inline-form {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .section-header {
+                flex-direction: column;
+                align-items: stretch;
             }
 
             button {
                 width: 100%;
             }
 
-            .form-group {
-                flex-direction: column;
-                align-items: stretch;
+            .card {
+                padding: 20px;
             }
         }
     </style>
@@ -226,14 +256,14 @@
     <!-- Header -->
     <div class="header">
         <h1>Student API Interface</h1>
-      
+        <p>Student information management using Flask and SQLite.</p>
     </div>
 
     <!-- Student Information -->
     <div class="card">
         <h2>Student Information</h2>
         <p class="description">
-            Retrieve basic student information from the API.
+            Retrieve student information from the API.
         </p>
 
         <button onclick="loadStudent()">
@@ -244,7 +274,7 @@
     </div>
 
     <!-- Greeting and Age Calculator -->
-    <div class="info-grid">
+    <div class="grid">
 
         <div class="card">
             <h2>Greeting API</h2>
@@ -252,12 +282,9 @@
                 Enter your name to receive a greeting.
             </p>
 
-            <div class="form-group">
-                <input
-                    type="text"
-                    id="nameInput"
-                    placeholder="Enter your first name"
-                >
+            <div class="inline-form">
+                <input type="text" id="nameInput"
+                       placeholder="Enter your first name">
 
                 <button onclick="sayHello()">
                     Say Hello
@@ -273,12 +300,9 @@
                 Calculate your age using your birth year.
             </p>
 
-            <div class="form-group">
-                <input
-                    type="number"
-                    id="birthYear"
-                    placeholder="Enter your birth year"
-                >
+            <div class="inline-form">
+                <input type="number" id="birthYear"
+                       placeholder="Enter your birth year">
 
                 <button onclick="calculateAge()">
                     Calculate Age
@@ -288,6 +312,67 @@
             <div id="ageResult" class="result"></div>
         </div>
 
+    </div>
+
+    <!-- Add Student Form -->
+    <div class="card">
+        <h2>Add New Student</h2>
+        <p class="description">
+            Enter student information to save it to the database.
+        </p>
+
+        <form id="studentForm">
+
+            <div class="form-grid">
+
+                <div class="form-group">
+                    <label for="studentId">Student ID</label>
+                    <input type="text" id="studentId"
+                           placeholder="e.g. 2026-00129" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="studentName">Full Name</label>
+                    <input type="text" id="studentName"
+                           placeholder="Enter full name" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="studentProgram">Program</label>
+                    <input type="text" id="studentProgram"
+                           placeholder="e.g. BSIT" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="studentYear">Year Level</label>
+                    <select id="studentYear" required>
+                        <option value="">Select Year Level</option>
+                        <option value="1">Year 1</option>
+                        <option value="2">Year 2</option>
+                        <option value="3">Year 3</option>
+                        <option value="4">Year 4</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="studentSection">Section</label>
+                    <select id="studentSection" required>
+                        <option value="">Select Section</option>
+                        <option value="A">Section A</option>
+                        <option value="B">Section B</option>
+                        <option value="C">Section C</option>
+                    </select>
+                </div>
+
+            </div>
+
+            <button type="submit" id="saveButton">
+                Save Student
+            </button>
+
+        </form>
+
+        <div id="saveMessage" class="result"></div>
     </div>
 
     <!-- Students Database -->
@@ -310,19 +395,38 @@
 
     </div>
 
+    <!-- Search Student -->
+    <div class="card">
+        <h2>Search Student by ID</h2>
+        <p class="description">
+            Search using the numeric database ID.
+        </p>
+
+        <div class="inline-form">
+            <input type="number" id="searchId"
+                   placeholder="Enter database ID" min="1">
+
+            <button onclick="searchStudent()">
+                Search Student
+            </button>
+        </div>
+
+        <div id="searchResult" class="result"></div>
+    </div>
+
     <!-- Filter Students -->
     <div class="card">
         <h2>Filter Students by Year Level</h2>
-
         <p class="description">
             Select a year level to display matching students.
         </p>
 
-        <div class="form-group">
+        <div class="inline-form">
             <select id="yearLevel">
                 <option value="1">Year 1</option>
                 <option value="2">Year 2</option>
                 <option value="3">Year 3</option>
+                <option value="4">Year 4</option>
             </select>
 
             <button onclick="filterStudents()">
@@ -333,35 +437,50 @@
         <div id="filteredStudents"></div>
     </div>
 
-    <!-- Footer -->
     <div class="footer">
-        Student API Interface | Flask & SQLite
+        Student API Interface | Powered by Flask & SQLite
     </div>
 
 </div>
 
 <script>
 
-    // Student Information
+    // Helper: Display messages safely
+    function showMessage(elementId, message, type = '') {
+        const element = document.getElementById(elementId);
+        element.textContent = message;
+        element.className = 'result' + (type ? ' ' + type : '');
+    }
+
+
+    // Student Information API
     function loadStudent() {
         fetch('/student')
             .then(response => {
-                if (!response.ok) {
-                    throw new Error('Request failed');
-                }
+                if (!response.ok) throw new Error('Request failed');
                 return response.json();
             })
             .then(data => {
-                document.getElementById('result').innerHTML =
-                    '<p><b>Student ID:</b> ' + data.student_id + '</p>' +
-                    '<p><b>Name:</b> ' + data.name + '</p>' +
-                    '<p><b>Program:</b> ' + data.program + '</p>' +
-                    '<p><b>Year:</b> ' + data.year + '</p>' +
-                    '<p><b>Section:</b> ' + data.section + '</p>';
+                const result = document.getElementById('result');
+                result.textContent = '';
+
+                [
+                    ['Student ID', data.student_id],
+                    ['Name', data.name],
+                    ['Program', data.program],
+                    ['Year', data.year],
+                    ['Section', data.section]
+                ].forEach(([label, value]) => {
+                    const p = document.createElement('p');
+                    const b = document.createElement('b');
+                    b.textContent = label + ': ';
+                    p.append(b, document.createTextNode(value));
+                    result.appendChild(p);
+                });
             })
-            .catch(error => {
-                document.getElementById('result').innerText =
-                    'Unable to retrieve student information.';
+            .catch(() => {
+                showMessage('result',
+                    'Unable to retrieve student information.', 'error');
             });
     }
 
@@ -372,103 +491,107 @@
 
         fetch('/hello?name=' + encodeURIComponent(name))
             .then(response => {
-                if (!response.ok) {
-                    throw new Error('Request failed');
-                }
+                if (!response.ok) throw new Error('Request failed');
                 return response.json();
             })
             .then(data => {
-                document.getElementById('greeting').innerText =
-                    data.message;
+                showMessage('greeting', data.message);
             })
-            .catch(error => {
-                document.getElementById('greeting').innerText =
-                    'Unable to retrieve greeting.';
+            .catch(() => {
+                showMessage('greeting',
+                    'Unable to retrieve greeting.', 'error');
             });
     }
 
 
-    // Age Calculator
+    // Age Calculator API
     function calculateAge() {
         const year = document.getElementById('birthYear').value;
 
-        if (year === '') {
-            document.getElementById('ageResult').innerText =
-                'Please enter your birth year.';
+        if (!year) {
+            showMessage('ageResult',
+                'Please enter your birth year.', 'error');
             return;
         }
 
         fetch('/age?year=' + encodeURIComponent(year))
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error('Request failed');
-                }
-                return response.json();
-            })
+            .then(response => response.json())
             .then(data => {
                 if (data.error) {
-                    document.getElementById('ageResult').innerText =
-                        data.error;
+                    showMessage('ageResult', data.error, 'error');
                 } else {
-                    document.getElementById('ageResult').innerHTML =
-                        '<p><b>Birth Year:</b> ' + data.birth_year + '</p>' +
-                        '<p><b>Calculated Age:</b> ' + data.calculated_age + '</p>';
+                    showMessage('ageResult',
+                        'Birth Year: ' + data.birth_year +
+                        ' | Calculated Age: ' + data.calculated_age);
                 }
             })
-            .catch(error => {
-                document.getElementById('ageResult').innerText =
-                    'Unable to calculate age.';
+            .catch(() => {
+                showMessage('ageResult',
+                    'Unable to calculate age.', 'error');
             });
     }
 
 
-    // Reusable Student Table
+    // Display Student Table
     function displayStudentTable(data, elementId) {
+        const container = document.getElementById(elementId);
+        container.textContent = '';
 
         if (data.length === 0) {
-            document.getElementById(elementId).innerHTML =
-                '<div class="result">No student records found.</div>';
+            showMessage(elementId, 'No student records found.');
             return;
         }
 
-        let output = `
-            <div class="table-container">
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Student ID</th>
-                            <th>Name</th>
-                            <th>Program</th>
-                            <th>Year</th>
-                            <th>Section</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-        `;
+        const wrapper = document.createElement('div');
+        wrapper.className = 'table-container';
+
+        const table = document.createElement('table');
+        const thead = document.createElement('thead');
+        const headerRow = document.createElement('tr');
+
+        ['ID', 'Student ID', 'Name', 'Program', 'Year', 'Section']
+            .forEach(label => {
+                const th = document.createElement('th');
+                th.textContent = label;
+                headerRow.appendChild(th);
+            });
+
+        thead.appendChild(headerRow);
+        table.appendChild(thead);
+
+        const tbody = document.createElement('tbody');
 
         data.forEach(student => {
-            output += `
-                <tr>
-                    <td>${student.student_id}</td>
-                    <td>${student.name}</td>
-                    <td>${student.program}</td>
-                    <td>
-                        <span class="badge">
-                            Year ${student.year}
-                        </span>
-                    </td>
-                    <td>${student.section}</td>
-                </tr>
-            `;
+            const row = document.createElement('tr');
+
+            [
+                student.id,
+                student.student_id,
+                student.name,
+                student.program,
+                student.year,
+                student.section
+            ].forEach((value, index) => {
+                const td = document.createElement('td');
+
+                if (index === 4) {
+                    const badge = document.createElement('span');
+                    badge.className = 'badge';
+                    badge.textContent = 'Year ' + value;
+                    td.appendChild(badge);
+                } else {
+                    td.textContent = value;
+                }
+
+                row.appendChild(td);
+            });
+
+            tbody.appendChild(row);
         });
 
-        output += `
-                    </tbody>
-                </table>
-            </div>
-        `;
-
-        document.getElementById(elementId).innerHTML = output;
+        table.appendChild(tbody);
+        wrapper.appendChild(table);
+        container.appendChild(wrapper);
     }
 
 
@@ -476,17 +599,94 @@
     function loadStudents() {
         fetch('/students')
             .then(response => {
-                if (!response.ok) {
-                    throw new Error('Request failed');
-                }
+                if (!response.ok) throw new Error('Request failed');
                 return response.json();
             })
             .then(data => {
                 displayStudentTable(data, 'studentList');
             })
+            .catch(() => {
+                showMessage('studentList',
+                    'Unable to retrieve student records.', 'error');
+            });
+    }
+
+
+    // Add Student
+    document.getElementById('studentForm')
+        .addEventListener('submit', function(event) {
+            event.preventDefault();
+
+            const button = document.getElementById('saveButton');
+            button.disabled = true;
+            button.textContent = 'Saving...';
+
+            const student = {
+                student_id: document.getElementById('studentId').value,
+                name: document.getElementById('studentName').value,
+                program: document.getElementById('studentProgram').value,
+                year: Number(document.getElementById('studentYear').value),
+                section: document.getElementById('studentSection').value
+            };
+
+            fetch('/students/add', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(student)
+            })
+            .then(async response => {
+                const data = await response.json();
+
+                if (!response.ok) {
+                    throw new Error(data.error || 'Unable to save student.');
+                }
+
+                return data;
+            })
+            .then(data => {
+                showMessage('saveMessage', data.message, 'success');
+
+                document.getElementById('studentForm').reset();
+
+                loadStudents();
+            })
             .catch(error => {
-                document.getElementById('studentList').innerText =
-                    'Unable to retrieve student records.';
+                showMessage('saveMessage', error.message, 'error');
+            })
+            .finally(() => {
+                button.disabled = false;
+                button.textContent = 'Save Student';
+            });
+        });
+
+
+    // Search Student by Database ID
+    function searchStudent() {
+        const id = document.getElementById('searchId').value;
+
+        if (!id || Number(id) < 1 || !Number.isInteger(Number(id))) {
+            showMessage('searchResult',
+                'Please enter a valid database ID.', 'error');
+            return;
+        }
+
+        fetch('/students/' + encodeURIComponent(id))
+            .then(async response => {
+                const data = await response.json();
+
+                if (!response.ok) {
+                    throw new Error(data.error || 'Request failed');
+                }
+
+                return data;
+            })
+            .then(data => {
+                displayStudentTable([data], 'searchResult');
+            })
+            .catch(error => {
+                showMessage('searchResult', error.message, 'error');
             });
     }
 
@@ -497,17 +697,15 @@
 
         fetch('/students/year/' + year)
             .then(response => {
-                if (!response.ok) {
-                    throw new Error('Request failed');
-                }
+                if (!response.ok) throw new Error('Request failed');
                 return response.json();
             })
             .then(data => {
                 displayStudentTable(data, 'filteredStudents');
             })
-            .catch(error => {
-                document.getElementById('filteredStudents').innerText =
-                    'Unable to retrieve student records.';
+            .catch(() => {
+                showMessage('filteredStudents',
+                    'Unable to retrieve student records.', 'error');
             });
     }
 
