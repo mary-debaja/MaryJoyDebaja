@@ -1,6 +1,5 @@
 
 import sqlite3
-from datetime import datetime
 from flask import Flask, jsonify, request, render_template
 
 app = Flask(__name__)
@@ -55,33 +54,33 @@ def hobby():
 # Age Calculator API
 @app.route('/age')
 def calculate_age():
-    birth_year = request.args.get('year', type=int)
+    try:
+        birth_year = request.args.get('year', type=int)
 
-    if birth_year is None:
+        if not birth_year:
+            return jsonify({
+                "error": "Please provide a birth year, e.g., /age?year=2003"
+            })
+
+        current_year = 2026
+        age = current_year - birth_year
+
         return jsonify({
-            "error": "Please provide a valid birth year."
-        }), 400
+            "birth_year": birth_year,
+            "calculated_age": age
+        })
 
-    current_year = datetime.now().year
-
-    if birth_year < 1900 or birth_year > current_year:
-        return jsonify({
-            "error": "Please enter a valid birth year."
-        }), 400
-
-    return jsonify({
-        "birth_year": birth_year,
-        "calculated_age": current_year - birth_year
-    })
+    except Exception as e:
+        return jsonify({"error": str(e)})
 
 
-# Get All Students
+# Get All Students from Database
 @app.route('/students')
 def get_students():
     conn = get_db_connection()
 
     students = conn.execute(
-        'SELECT * FROM students ORDER BY id DESC'
+        'SELECT * FROM students'
     ).fetchall()
 
     conn.close()
@@ -89,9 +88,114 @@ def get_students():
     return jsonify([dict(student) for student in students])
 
 
-# Get Student by Database ID
+# Get Student by ID
 @app.route('/students/<int:id>')
 def get_student_by_id(id):
+    conn = get_db_connection()
+
+    student = conn.execute(
+        'SELECT * FROM students WHERE id = ?', (id,)
+    ).fetchone()
+
+    conn.close()
+
+    if student is None:
+        return jsonify({"error": "Student not found"}), 404
+
+    return jsonify(dict(student))
+
+
+# Additional Task: Filter Students by Year Level
+@app.route('/students/year/<int:year>')
+def get_students_by_year(year):
+    conn = get_db_connection()
+
+    students = conn.execute(
+        'SELECT * FROM students WHERE year = ?', (year,)
+    ).fetchall()
+
+    conn.close()
+
+    return jsonify([dict(student) for student in students])
+
+
+# ==========================================
+# CREATE - Add New Student
+# ==========================================
+@app.route('/api/students', methods=['POST'])
+def add_student():
+    data = request.get_json(silent=True)
+
+    if not isinstance(data, dict):
+        return jsonify({
+            "error": "Invalid JSON data"
+        }), 400
+
+    required = ['student_id', 'name', 'program', 'year', 'section']
+
+    if any(
+        field not in data or data[field] is None
+        or str(data[field]).strip() == ''
+        for field in required
+    ):
+        return jsonify({
+            "error": "Please complete all fields"
+        }), 400
+
+    try:
+        year = int(data['year'])
+    except (ValueError, TypeError):
+        return jsonify({
+            "error": "Invalid year level"
+        }), 400
+
+    if year not in (1, 2, 3, 4):
+        return jsonify({
+            "error": "Year must be between 1 and 4"
+        }), 400
+
+    student_id = str(data['student_id']).strip()
+    name = str(data['name']).strip()
+    program = str(data['program']).strip()
+    section = str(data['section']).strip()
+
+    conn = get_db_connection()
+
+    try:
+        existing = conn.execute(
+            'SELECT id FROM students WHERE student_id = ?',
+            (student_id,)
+        ).fetchone()
+
+        if existing:
+            return jsonify({
+                "error": "Student ID already exists"
+            }), 409
+
+        cursor = conn.execute(
+            """INSERT INTO students
+            (student_id, name, program, year, section)
+            VALUES (?, ?, ?, ?, ?)""",
+            (student_id, name, program, year, section)
+        )
+
+        conn.commit()
+        new_id = cursor.lastrowid
+
+        return jsonify({
+            "message": "Student added",
+            "id": new_id
+        }), 201
+
+    finally:
+        conn.close()
+
+
+# ==========================================
+# READ - Get Student by ID
+# ==========================================
+@app.route('/api/students/<int:id>', methods=['GET'])
+def api_get_student(id):
     conn = get_db_connection()
 
     student = conn.execute(
@@ -108,81 +212,129 @@ def get_student_by_id(id):
     return jsonify(dict(student))
 
 
-# Filter Students by Year Level
-@app.route('/students/year/<int:year>')
-def get_students_by_year(year):
-    conn = get_db_connection()
-
-    students = conn.execute(
-        'SELECT * FROM students WHERE year = ? ORDER BY id DESC',
-        (year,)
-    ).fetchall()
-
-    conn.close()
-
-    return jsonify([dict(student) for student in students])
-
-
-# Add New Student
-@app.route('/students/add', methods=['POST'])
-def add_student():
+# ==========================================
+# UPDATE - Update Existing Student
+# ==========================================
+@app.route('/api/students/<int:id>', methods=['PUT'])
+def update_student(id):
     data = request.get_json(silent=True)
 
     if not isinstance(data, dict):
         return jsonify({
-            "error": "Invalid JSON data."
+            "error": "Invalid JSON data"
         }), 400
 
-    student_id = str(data.get('student_id') or '').strip()
-    name = str(data.get('name') or '').strip()
-    program = str(data.get('program') or '').strip()
-    section = str(data.get('section') or '').strip()
+    required = ['student_id', 'name', 'program', 'year', 'section']
+
+    if any(
+        field not in data or data[field] is None
+        or str(data[field]).strip() == ''
+        for field in required
+    ):
+        return jsonify({
+            "error": "Please complete all fields"
+        }), 400
 
     try:
-        year = int(data.get('year'))
+        year = int(data['year'])
     except (ValueError, TypeError):
         return jsonify({
-            "error": "Please select a valid year level."
+            "error": "Invalid year level"
         }), 400
 
-    if not all([student_id, name, program, section]):
+    if year not in (1, 2, 3, 4):
         return jsonify({
-            "error": "Please complete all fields."
+            "error": "Year must be between 1 and 4"
         }), 400
 
-    if year < 1 or year > 4:
-        return jsonify({
-            "error": "Year level must be between 1 and 4."
-        }), 400
+    student_id = str(data['student_id']).strip()
+    name = str(data['name']).strip()
+    program = str(data['program']).strip()
+    section = str(data['section']).strip()
 
     conn = get_db_connection()
 
     try:
-        existing = conn.execute(
-            'SELECT id FROM students WHERE student_id = ?',
-            (student_id,)
+        student = conn.execute(
+            'SELECT * FROM students WHERE id = ?',
+            (id,)
         ).fetchone()
 
-        if existing:
+        if student is None:
             return jsonify({
-                "error": "Student ID already exists."
+                "error": "Student not found"
+            }), 404
+
+        duplicate = conn.execute(
+            'SELECT id FROM students WHERE student_id = ? AND id != ?',
+            (student_id, id)
+        ).fetchone()
+
+        if duplicate:
+            return jsonify({
+                "error": "Student ID already exists"
             }), 409
 
-        cursor = conn.execute('''
-            INSERT INTO students
-            (student_id, name, program, year, section)
-            VALUES (?, ?, ?, ?, ?)
-        ''', (student_id, name, program, year, section))
+        conn.execute(
+            """UPDATE students
+            SET student_id = ?,
+                name = ?,
+                program = ?,
+                year = ?,
+                section = ?
+            WHERE id = ?""",
+            (student_id, name, program, year, section, id)
+        )
 
         conn.commit()
 
         return jsonify({
-            "message": "Student added successfully!",
-            "id": cursor.lastrowid
-        }), 201
+            "message": "Student updated"
+        }), 200
 
     finally:
         conn.close()
+
+
+# ==========================================
+# DELETE - Delete Student
+# ==========================================
+@app.route('/api/students/<int:id>', methods=['DELETE'])
+def delete_student(id):
+    conn = get_db_connection()
+
+    try:
+        cursor = conn.execute(
+            'DELETE FROM students WHERE id = ?',
+            (id,)
+        )
+
+        if cursor.rowcount == 0:
+            return jsonify({
+                "error": "Student not found"
+            }), 404
+
+        conn.commit()
+
+        return jsonify({
+            "message": "Student deleted"
+        }), 200
+
+    finally:
+        conn.close()
+
+# READ - Get All Students (For Classmate)
+@app.route('/api/students', methods=['GET'])
+def api_students():
+    conn = get_db_connection()
+
+    rows = conn.execute(
+        'SELECT * FROM students'
+    ).fetchall()
+
+    conn.close()
+
+    return jsonify([dict(row) for row in rows])
 
 
 if __name__ == '__main__':

@@ -20,7 +20,7 @@
         }
 
         .container {
-            max-width: 1050px;
+            max-width: 1100px;
             margin: auto;
             padding: 40px 20px;
         }
@@ -30,15 +30,19 @@
         }
 
         .header h1 {
-            font-size: 30px;
             margin: 0;
+            font-size: 30px;
             color: #0f172a;
         }
 
-        .header p {
+        .header p,
+        .description {
             color: #64748b;
             font-size: 14px;
-            margin-top: 8px;
+        }
+
+        .description {
+            margin: 5px 0 20px;
         }
 
         .card {
@@ -50,15 +54,8 @@
         }
 
         .card h2 {
+            margin: 0;
             font-size: 19px;
-            margin: 0 0 5px;
-            color: #0f172a;
-        }
-
-        .description {
-            color: #64748b;
-            font-size: 14px;
-            margin: 0 0 20px;
         }
 
         .grid {
@@ -119,6 +116,44 @@
         button:disabled {
             opacity: 0.6;
             cursor: not-allowed;
+        }
+
+        .btn-secondary {
+            background: #e2e8f0;
+            color: #334155;
+        }
+
+        .btn-secondary:hover {
+            background: #cbd5e1;
+        }
+
+        .btn-edit {
+            background: #eff6ff;
+            color: #1d4ed8;
+        }
+
+        .btn-edit:hover {
+            background: #dbeafe;
+        }
+
+        .btn-delete {
+            background: #fef2f2;
+            color: #dc2626;
+        }
+
+        .btn-delete:hover {
+            background: #fee2e2;
+        }
+
+        .btn-small {
+            padding: 7px 12px;
+            font-size: 12px;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
         }
 
         .inline-form {
@@ -207,6 +242,11 @@
             gap: 15px;
         }
 
+        .actions {
+            display: flex;
+            gap: 7px;
+        }
+
         .footer {
             text-align: center;
             color: #94a3b8;
@@ -214,32 +254,19 @@
             margin-top: 30px;
         }
 
-        @media (max-width: 650px) {
+        @media (max-width: 700px) {
             .container {
                 padding: 25px 15px;
             }
 
             .grid, .form-grid {
                 grid-template-columns: 1fr;
-                gap: 0;
             }
 
-            .form-grid {
-                gap: 15px;
-            }
-
-            .inline-form {
-                flex-direction: column;
-                align-items: stretch;
-            }
-
+            .inline-form,
             .section-header {
                 flex-direction: column;
                 align-items: stretch;
-            }
-
-            button {
-                width: 100%;
             }
 
             .card {
@@ -256,20 +283,15 @@
     <!-- Header -->
     <div class="header">
         <h1>Student API Interface</h1>
-        <p>Student information management using Flask and SQLite.</p>
+        <p>Manage student information using Flask REST API and SQLite.</p>
     </div>
 
     <!-- Student Information -->
     <div class="card">
         <h2>Student Information</h2>
-        <p class="description">
-            Retrieve student information from the API.
-        </p>
+        <p class="description">Retrieve basic student information.</p>
 
-        <button onclick="loadStudent()">
-            Load Student Information
-        </button>
-
+        <button onclick="loadStudent()">Load Student Information</button>
         <div id="result" class="result"></div>
     </div>
 
@@ -278,17 +300,12 @@
 
         <div class="card">
             <h2>Greeting API</h2>
-            <p class="description">
-                Enter your name to receive a greeting.
-            </p>
+            <p class="description">Enter your name to receive a greeting.</p>
 
             <div class="inline-form">
                 <input type="text" id="nameInput"
-                       placeholder="Enter your first name">
-
-                <button onclick="sayHello()">
-                    Say Hello
-                </button>
+                       placeholder="Enter your name">
+                <button onclick="sayHello()">Say Hello</button>
             </div>
 
             <div id="greeting" class="result"></div>
@@ -296,17 +313,12 @@
 
         <div class="card">
             <h2>Age Calculator</h2>
-            <p class="description">
-                Calculate your age using your birth year.
-            </p>
+            <p class="description">Calculate your age using your birth year.</p>
 
             <div class="inline-form">
                 <input type="number" id="birthYear"
-                       placeholder="Enter your birth year">
-
-                <button onclick="calculateAge()">
-                    Calculate Age
-                </button>
+                       placeholder="Enter birth year">
+                <button onclick="calculateAge()">Calculate</button>
             </div>
 
             <div id="ageResult" class="result"></div>
@@ -314,15 +326,14 @@
 
     </div>
 
-    <!-- Add Student Form -->
-    <div class="card">
-        <h2>Add New Student</h2>
-        <p class="description">
+    <!-- ADD / EDIT STUDENT -->
+    <div class="card" id="studentFormCard">
+        <h2 id="formTitle">Add New Student</h2>
+        <p class="description" id="formDescription">
             Enter student information to save it to the database.
         </p>
 
         <form id="studentForm">
-
             <div class="form-grid">
 
                 <div class="form-group">
@@ -366,59 +377,57 @@
 
             </div>
 
-            <button type="submit" id="saveButton">
-                Save Student
-            </button>
+            <div class="button-group">
+                <button type="submit" id="saveButton">
+                    Add Student
+                </button>
 
+                <button type="button" id="cancelButton"
+                        class="btn-secondary"
+                        onclick="cancelEdit()" hidden>
+                    Cancel Edit
+                </button>
+            </div>
         </form>
 
         <div id="saveMessage" class="result"></div>
     </div>
 
-    <!-- Students Database -->
+    <!-- STUDENTS DATABASE -->
     <div class="card">
-
         <div class="section-header">
             <div>
                 <h2>Students Database</h2>
                 <p class="description">
-                    View all student records stored in SQLite.
+                    View, edit, and delete student records.
                 </p>
             </div>
 
-            <button onclick="loadStudents()">
-                Load Students
-            </button>
+            <button onclick="loadStudents()">Refresh Students</button>
         </div>
 
         <div id="studentList"></div>
-
     </div>
 
-    <!-- Search Student -->
+    <!-- SEARCH STUDENT -->
     <div class="card">
         <h2>Search Student by ID</h2>
-        <p class="description">
-            Search using the numeric database ID.
-        </p>
+        <p class="description">Search using the numeric database ID.</p>
 
         <div class="inline-form">
             <input type="number" id="searchId"
                    placeholder="Enter database ID" min="1">
-
-            <button onclick="searchStudent()">
-                Search Student
-            </button>
+            <button onclick="searchStudent()">Search Student</button>
         </div>
 
         <div id="searchResult" class="result"></div>
     </div>
 
-    <!-- Filter Students -->
+    <!-- FILTER STUDENTS -->
     <div class="card">
         <h2>Filter Students by Year Level</h2>
         <p class="description">
-            Select a year level to display matching students.
+            Display students based on their year level.
         </p>
 
         <div class="inline-form">
@@ -429,83 +438,83 @@
                 <option value="4">Year 4</option>
             </select>
 
-            <button onclick="filterStudents()">
-                Filter Students
-            </button>
+            <button onclick="filterStudents()">Filter Students</button>
         </div>
 
         <div id="filteredStudents"></div>
     </div>
 
     <div class="footer">
-        Student API Interface | Powered by Flask & SQLite
+        Student API Interface | Flask & SQLite
     </div>
 
 </div>
 
 <script>
+    // ID of the student currently being edited
+    let editingId = null;
 
-    // Helper: Display messages safely
+
+    // Helper: Show status messages
     function showMessage(elementId, message, type = '') {
         const element = document.getElementById(elementId);
-        element.textContent = message;
         element.className = 'result' + (type ? ' ' + type : '');
+        element.textContent = message;
+    }
+
+
+    // Helper: Make API requests and handle errors
+    async function apiRequest(url, options = {}) {
+        const response = await fetch(url, options);
+        const data = await response.json();
+
+        if (!response.ok) {
+            throw new Error(data.error || 'Request failed.');
+        }
+
+        return data;
     }
 
 
     // Student Information API
-    function loadStudent() {
-        fetch('/student')
-            .then(response => {
-                if (!response.ok) throw new Error('Request failed');
-                return response.json();
-            })
-            .then(data => {
-                const result = document.getElementById('result');
-                result.textContent = '';
+    async function loadStudent() {
+        try {
+            const data = await apiRequest('/student');
 
-                [
-                    ['Student ID', data.student_id],
-                    ['Name', data.name],
-                    ['Program', data.program],
-                    ['Year', data.year],
-                    ['Section', data.section]
-                ].forEach(([label, value]) => {
-                    const p = document.createElement('p');
-                    const b = document.createElement('b');
-                    b.textContent = label + ': ';
-                    p.append(b, document.createTextNode(value));
-                    result.appendChild(p);
-                });
-            })
-            .catch(() => {
-                showMessage('result',
-                    'Unable to retrieve student information.', 'error');
-            });
+            showMessage(
+                'result',
+                'Student ID: ' + data.student_id +
+                '\nName: ' + data.name +
+                '\nProgram: ' + data.program +
+                '\nYear: ' + data.year +
+                '\nSection: ' + data.section
+            );
+
+            document.getElementById('result').style.whiteSpace = 'pre-line';
+        } catch (error) {
+            showMessage('result', error.message, 'error');
+        }
     }
 
 
     // Greeting API
-    function sayHello() {
+    async function sayHello() {
         const name = document.getElementById('nameInput').value;
 
-        fetch('/hello?name=' + encodeURIComponent(name))
-            .then(response => {
-                if (!response.ok) throw new Error('Request failed');
-                return response.json();
-            })
-            .then(data => {
-                showMessage('greeting', data.message);
-            })
-            .catch(() => {
-                showMessage('greeting',
-                    'Unable to retrieve greeting.', 'error');
-            });
+        try {
+            const data = await apiRequest(
+                '/hello?name=' + encodeURIComponent(name)
+            );
+
+            showMessage('greeting', data.message);
+        } catch (error) {
+            showMessage('greeting', error.message, 'error');
+        }
     }
 
 
-    // Age Calculator API
-    function calculateAge() {
+    // Age Calculator
+    async function calculateAge() {
         const year = document.getElementById('birthYear').value;
 
         if (!year) {
@@ -514,30 +523,33 @@
             return;
         }
 
-        fetch('/age?year=' + encodeURIComponent(year))
-            .then(response => response.json())
-            .then(data => {
-                if (data.error) {
-                    showMessage('ageResult', data.error, 'error');
-                } else {
-                    showMessage('ageResult',
-                        'Birth Year: ' + data.birth_year +
-                        ' | Calculated Age: ' + data.calculated_age);
-                }
-            })
-            .catch(() => {
-                showMessage('ageResult',
-                    'Unable to calculate age.', 'error');
-            });
+        try {
+            const data = await apiRequest(
+                '/age?year=' + encodeURIComponent(year)
+            );
+
+            if (data.error) {
+                showMessage('ageResult', data.error, 'error');
+            } else {
+                showMessage(
+                    'ageResult',
+                    'Birth Year: ' + data.birth_year +
+                    ' | Calculated Age: ' + data.calculated_age
+                );
+            }
+        } catch (error) {
+            showMessage('ageResult', error.message, 'error');
+        }
     }
 
 
-    // Display Student Table
-    function displayStudentTable(data, elementId) {
+    // Create table from database records
+    function displayStudentTable(students, elementId) {
         const container = document.getElementById(elementId);
         container.textContent = '';
+        container.className = '';
 
-        if (data.length === 0) {
+        if (students.length === 0) {
             showMessage(elementId, 'No student records found.');
             return;
         }
@@ -546,22 +558,24 @@
         wrapper.className = 'table-container';
 
         const table = document.createElement('table');
-        const thead = document.createElement('thead');
+        const header = document.createElement('thead');
         const headerRow = document.createElement('tr');
 
-        ['ID', 'Student ID', 'Name', 'Program', 'Year', 'Section']
-            .forEach(label => {
-                const th = document.createElement('th');
-                th.textContent = label;
-                headerRow.appendChild(th);
-            });
+        [
+            'ID', 'Student ID', 'Name',
+            'Program', 'Year', 'Section', 'Actions'
+        ].forEach(text => {
+            const th = document.createElement('th');
+            th.textContent = text;
+            headerRow.appendChild(th);
+        });
 
-        thead.appendChild(headerRow);
-        table.appendChild(thead);
+        header.appendChild(headerRow);
+        table.appendChild(header);
 
         const tbody = document.createElement('tbody');
 
-        data.forEach(student => {
+        students.forEach(student => {
             const row = document.createElement('tr');
 
             [
@@ -586,6 +600,25 @@
                 row.appendChild(td);
             });
 
+            // Edit and Delete buttons
+            const actionsCell = document.createElement('td');
+            const actions = document.createElement('div');
+            actions.className = 'actions';
+
+            const editButton = document.createElement('button');
+            editButton.className = 'btn-edit btn-small';
+            editButton.textContent = 'Edit';
+            editButton.onclick = () => editStudent(student.id);
+
+            const deleteButton = document.createElement('button');
+            deleteButton.className = 'btn-delete btn-small';
+            deleteButton.textContent = 'Delete';
+            deleteButton.onclick = () => deleteStudent(student.id);
+
+            actions.append(editButton, deleteButton);
+            actionsCell.appendChild(actions);
+            row.appendChild(actionsCell);
+
             tbody.appendChild(row);
         });
 
@@ -595,119 +628,210 @@
     }
 
 
-    // Load All Students
-    function loadStudents() {
-        fetch('/students')
-            .then(response => {
-                if (!response.ok) throw new Error('Request failed');
-                return response.json();
-            })
-            .then(data => {
-                displayStudentTable(data, 'studentList');
-            })
-            .catch(() => {
-                showMessage('studentList',
-                    'Unable to retrieve student records.', 'error');
-            });
+    // READ - Load All Students
+    async function loadStudents() {
+        try {
+            const students = await apiRequest('/students');
+            displayStudentTable(students, 'studentList');
+        } catch (error) {
+            showMessage('studentList', error.message, 'error');
+        }
     }
 
 
-    // Add Student
+    // CREATE / UPDATE - Submit Student Form
     document.getElementById('studentForm')
-        .addEventListener('submit', function(event) {
+        .addEventListener('submit', async function(event) {
             event.preventDefault();
+
+            const studentData = {
+                student_id: document.getElementById('studentId').value.trim(),
+                name: document.getElementById('studentName').value.trim(),
+                program: document.getElementById('studentProgram').value.trim(),
+                year: Number(document.getElementById('studentYear').value),
+                section: document.getElementById('studentSection').value
+            };
+
+            const isEditing = editingId !== null;
+
+            const url = isEditing
+                ? '/api/students/' + editingId
+                : '/api/students';
+
+            const method = isEditing ? 'PUT' : 'POST';
 
             const button = document.getElementById('saveButton');
             button.disabled = true;
             button.textContent = 'Saving...';
 
-            const student = {
-                student_id: document.getElementById('studentId').value,
-                name: document.getElementById('studentName').value,
-                program: document.getElementById('studentProgram').value,
-                year: Number(document.getElementById('studentYear').value),
-                section: document.getElementById('studentSection').value
-            };
+            try {
+                const data = await apiRequest(url, {
+                    method: method,
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(studentData)
+                });
 
-            fetch('/students/add', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify(student)
-            })
-            .then(async response => {
-                const data = await response.json();
-
-                if (!response.ok) {
-                    throw new Error(data.error || 'Unable to save student.');
-                }
-
-                return data;
-            })
-            .then(data => {
+                cancelEdit();
                 showMessage('saveMessage', data.message, 'success');
 
-                document.getElementById('studentForm').reset();
+                // Refresh student records after saving
+                await refreshStudentViews();
 
-                loadStudents();
-            })
-            .catch(error => {
+            } catch (error) {
                 showMessage('saveMessage', error.message, 'error');
-            })
-            .finally(() => {
+            } finally {
                 button.disabled = false;
-                button.textContent = 'Save Student';
-            });
+                button.textContent =
+                    editingId === null ? 'Add Student' : 'Save Changes';
+            }
         });
 
 
+    // EDIT - Fill the form with existing student data
+    async function editStudent(id) {
+        try {
+            const student = await apiRequest('/api/students/' + id);
+
+            editingId = id;
+
+            document.getElementById('studentId').value =
+                student.student_id;
+
+            document.getElementById('studentName').value =
+                student.name;
+
+            document.getElementById('studentProgram').value =
+                student.program;
+
+            document.getElementById('studentYear').value =
+                student.year;
+
+            document.getElementById('studentSection').value =
+                student.section;
+
+            document.getElementById('formTitle').textContent =
+                'Edit Student';
+
+            document.getElementById('formDescription').textContent =
+                'Update the student information below.';
+
+            document.getElementById('saveButton').textContent =
+                'Save Changes';
+
+            document.getElementById('cancelButton').hidden = false;
+
+            document.getElementById('saveMessage').textContent = '';
+
+            document.getElementById('studentFormCard')
+                .scrollIntoView({ behavior: 'smooth' });
+
+        } catch (error) {
+            showMessage('saveMessage', error.message, 'error');
+        }
+    }
+
+
+    // Cancel editing and reset the form
+    function cancelEdit() {
+        editingId = null;
+
+        document.getElementById('studentForm').reset();
+
+        document.getElementById('formTitle').textContent =
+            'Add New Student';
+
+        document.getElementById('formDescription').textContent =
+            'Enter student information to save it to the database.';
+
+        document.getElementById('saveButton').textContent =
+            'Add Student';
+
+        document.getElementById('cancelButton').hidden = true;
+    }
+
+
+    // DELETE - Remove a student
+    async function deleteStudent(id) {
+        const confirmed = confirm(
+            'Are you sure you want to delete this student?'
+        );
+
+        if (!confirmed) return;
+
+        try {
+            const data = await apiRequest('/api/students/' + id, {
+                method: 'DELETE'
+            });
+
+            if (editingId === id) {
+                cancelEdit();
+            }
+
+            showMessage('saveMessage', data.message, 'success');
+
+            // Refresh student records after deletion
+            await refreshStudentViews();
+
+        } catch (error) {
+            showMessage('saveMessage', error.message, 'error');
+        }
+    }
+
+
     // Search Student by Database ID
-    function searchStudent() {
+    async function searchStudent() {
         const id = document.getElementById('searchId').value;
 
-        if (!id || Number(id) < 1 || !Number.isInteger(Number(id))) {
+        if (!id || !Number.isInteger(Number(id)) || Number(id) < 1) {
             showMessage('searchResult',
                 'Please enter a valid database ID.', 'error');
             return;
         }
 
-        fetch('/students/' + encodeURIComponent(id))
-            .then(async response => {
-                const data = await response.json();
-
-                if (!response.ok) {
-                    throw new Error(data.error || 'Request failed');
-                }
-
-                return data;
-            })
-            .then(data => {
-                displayStudentTable([data], 'searchResult');
-            })
-            .catch(error => {
-                showMessage('searchResult', error.message, 'error');
-            });
+        try {
+            const student = await apiRequest('/api/students/' + id);
+            displayStudentTable([student], 'searchResult');
+        } catch (error) {
+            showMessage('searchResult', error.message, 'error');
+        }
     }
 
 
     // Filter Students by Year Level
-    function filterStudents() {
+    async function filterStudents() {
         const year = document.getElementById('yearLevel').value;
 
-        fetch('/students/year/' + year)
-            .then(response => {
-                if (!response.ok) throw new Error('Request failed');
-                return response.json();
-            })
-            .then(data => {
-                displayStudentTable(data, 'filteredStudents');
-            })
-            .catch(() => {
-                showMessage('filteredStudents',
-                    'Unable to retrieve student records.', 'error');
-            });
+        try {
+            const students = await apiRequest(
+                '/students/year/' + year
+            );
+
+            displayStudentTable(students, 'filteredStudents');
+        } catch (error) {
+            showMessage('filteredStudents', error.message, 'error');
+        }
     }
+
+
+    // Refresh all visible student lists after CRUD operations
+    async function refreshStudentViews() {
+        await loadStudents();
+
+        if (document.getElementById('filteredStudents').children.length > 0
+            || document.getElementById('filteredStudents').textContent.trim()) {
+            await filterStudents();
+        }
+
+        if (document.getElementById('searchResult').textContent.trim()) {
+            await searchStudent();
+        }
+    }
+
+
+    // Automatically load students when the page opens
+    window.addEventListener('DOMContentLoaded', loadStudents);
 
 </script>
 
