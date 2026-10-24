@@ -1,4 +1,4 @@
-
+import requests
 import sqlite3
 from flask import Flask, jsonify, request, render_template
 
@@ -335,6 +335,29 @@ def api_students():
     conn.close()
 
     return jsonify([dict(row) for row in rows])
+
+# Get classmate's student records (read-only)
+@app.route('/classmate-records')
+def get_classmate_records():
+    url = "https://abordaje-jm.onrender.com/students"
+
+    try:
+        response = requests.get(url, timeout=30)
+        response.raise_for_status()
+
+        students = response.json()
+        return jsonify(students)
+
+    except requests.RequestException as e:
+        return jsonify({
+            "error": "Unable to connect to classmate API",
+            "details": str(e)
+        }), 502
+
+    except ValueError:
+        return jsonify({
+            "error": "Classmate API did not return valid JSON"
+        }), 502
 
 
 if __name__ == '__main__':
