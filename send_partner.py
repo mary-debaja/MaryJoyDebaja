@@ -8,7 +8,7 @@ import requests
 partner_url = "https://abordaje-jm.onrender.com/api/students"
 
 record = {
-    "student_id": "EXT-002",
+    "student_id": "EXT-003",
     "name": "Sample Exchange Record",
     "program": "BSIT",
     "year": 1,
