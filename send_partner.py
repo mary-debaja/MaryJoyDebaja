@@ -5,7 +5,7 @@ import requests
 # STEP 9 - SEND PRACTICE RECORD TO PARTNER
 # ==========================================
 
-partner_url = "https://abordaje-jm.onrender.com/api/students"
+partner_url = "http://13.213.166.139"
 
 record = {
     "student_id": "EXT-003",
